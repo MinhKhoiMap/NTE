@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import "./SiteSelection.css";
 import mapboxgl from "mapbox-gl";
 
 import { siteSelectionData } from "../../assets/data/site";
+import Button from "../../components/Button/Button";
 
 const SiteSelection = ({ map }) => {
+  const [siteBounds, setSiteBounds] = useState(null);
+
   useEffect(() => {
     if (map) {
-      console.log("hehe boiz");
       map.flyTo({
         center: [109.20182482281035, 12.246813094956494],
         essential: true, // this animation is considered essential with respect to prefers-reduced-motion
@@ -14,20 +17,12 @@ const SiteSelection = ({ map }) => {
         speed: 1.2,
       });
 
-      if (map.isStyleLoaded()) map.once("render", handleLoadSite);
+      if (map.isStyleLoaded()) map.once("idle", handleLoadSite);
       else map.on("load", handleLoadSite);
 
       return () => {
-        if (
-          map.getLayer("map_background") &&
-          map.getLayer("line_site") &&
-          map.getLayer("site_background") &&
-          map.getSource("site_selection")
-        ) {
+        if (map.getLayer("map_background")) {
           map.removeLayer("map_background");
-          map.removeLayer("line_site");
-          map.removeLayer("site_background");
-          map.removeSource("site_selection");
           console.log("clean up useEffect");
         }
       };
@@ -35,22 +30,6 @@ const SiteSelection = ({ map }) => {
   }, [map]);
 
   function handleLoadSite() {
-    map.addSource("site_selection", {
-      type: "geojson",
-      data: siteSelectionData,
-    });
-
-    map.addLayer({
-      id: "line_site",
-      source: "site_selection",
-      type: "line",
-      layout: {},
-      paint: {
-        "line-color": "#000",
-        "line-width": 4,
-      },
-    });
-
     map.addLayer({
       id: "map_background",
       type: "background",
@@ -60,30 +39,126 @@ const SiteSelection = ({ map }) => {
       },
     });
 
-    map.addLayer({
-      id: "site_background",
-      type: "fill",
-      source: "site_selection",
-      layout: {},
-      paint: {
-        "fill-color": "rgba(255,255,255,0.7)",
-      },
+    var bounds = new mapboxgl.LngLatBounds();
+    var minLat = 90,
+      maxLat = -90,
+      minLng = 180,
+      maxLng = -180;
+
+    siteSelectionData.features.forEach((feature, index) => {
+      let name = `site_${index}`;
+      map.addSource(name, {
+        type: "geojson",
+        data: feature.geometry,
+      });
+
+      map.addLayer({
+        id: `line_${name}`,
+        type: "line",
+        source: name,
+        layout: {},
+        paint: {
+          "line-color": "#000",
+          "line-width": 4,
+        },
+      });
+
+      map.addLayer({
+        id: `bg_${name}`,
+        type: "fill",
+        source: name,
+        layout: {},
+        paint: {
+          "fill-color": "rgba(255, 255, 255, 0.7)",
+        },
+      });
+
+      map.on("click", `bg_${name}`, (e) => {
+        var minLat = 90,
+          maxLat = -90,
+          minLng = 180,
+          maxLng = -180;
+        feature.geometry.coordinates[0].forEach((coordinate) => {
+          maxLat = Math.max(coordinate[1], maxLat);
+          minLat = Math.min(coordinate[1], minLat);
+          maxLng = Math.max(coordinate[0], maxLng);
+          minLng = Math.min(coordinate[0], minLng);
+        });
+        var bounds = new mapboxgl.LngLatBounds([
+          [maxLng, maxLat],
+          [minLng, minLat],
+        ]);
+
+        map.fitBounds(bounds, {
+          padding: { top: 20, bottom: 20, left: 20, right: 20 },
+        });
+      });
+
+      map.on("mouseenter", `bg_${name}`, (e) => {
+        map.doubleClickZoom.disable();
+        map.getCanvas().style.cursor = "pointer";
+      });
+
+      map.on("mouseleave", `bg_${name}`, (e) => {
+        map.doubleClickZoom.enable();
+        map.getCanvas().style.cursor = "grab";
+      });
+
+      map.on("dragstart", `bg_${name}`, (e) => {
+        map.getCanvas().style.cursor = "grab";
+      });
+
+      map.on("dragend", `bg_${name}`, (e) => {
+        map.getCanvas().style.cursor = "cursor";
+      });
+
+      feature.geometry.coordinates[0].forEach((coordinate) => {
+        maxLat = Math.max(coordinate[1], maxLat);
+        minLat = Math.min(coordinate[1], minLat);
+        maxLng = Math.max(coordinate[0], maxLng);
+        minLng = Math.min(coordinate[0], minLng);
+      });
     });
 
-    map.on("mouseenter", "site_background", (e) => {
-      map.doubleClickZoom.disable();
-    });
+    bounds.extend([
+      [maxLng, maxLat],
+      [minLng, minLat],
+    ]);
 
-    map.on("mouseleave", "site_background", (e) => {
-      map.doubleClickZoom.enable();
-    });
+    setSiteBounds(bounds);
 
-    siteSelectionData.features.forEach((site) => {
-      console.log(site);
-    });
+    map.fitBounds(bounds, { padding: { top: 20, bottom: 20 } });
   }
 
-  return null;
+  const handleReCenter = () => {
+    if (map)
+      map.fitBounds(siteBounds, {
+        padding: { top: 20, bottom: 20, left: 20, right: 20 },
+      });
+  };
+
+  return (
+    <Button
+      label="Re-center"
+      icon={
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="34"
+          height="18"
+          viewBox="0 0 34 18"
+          fill="none"
+        >
+          <path
+            d="M6.47145 9.72998C7.90229 7.31283 10.0878 5.43285 12.6917 4.37936C15.2956 3.32587 18.1735 3.15726 20.8825 3.89947C23.5916 4.64168 25.9817 6.25358 27.685 8.48711C29.3884 10.7206 30.3105 13.452 30.3095 16.2609C30.3095 16.714 30.4895 17.1485 30.8099 17.4689C31.1303 17.7893 31.5648 17.9693 32.0179 17.9693C32.4709 17.9693 32.9055 17.7893 33.2258 17.4689C33.5462 17.1485 33.7262 16.714 33.7262 16.2609C33.7264 12.825 32.6362 9.4777 30.6124 6.701C28.5887 3.92432 25.7359 1.86156 22.4649 0.809791C19.194 -0.241975 15.6736 -0.228472 12.4108 0.848356C9.14795 1.92518 6.31108 4.00977 4.3087 6.8019L3.39133 1.60003C3.31272 1.15374 3.06005 0.756968 2.68889 0.496984C2.31774 0.237 1.85851 0.135104 1.41222 0.213713C0.965942 0.292322 0.569166 0.544997 0.309182 0.916151C0.0491981 1.2873 -0.0526973 1.74654 0.0259117 2.19282L1.806 12.2874C1.88521 12.7335 2.13838 13.1298 2.50983 13.3892C2.75189 13.5516 3.02838 13.6553 3.31746 13.6924C3.60654 13.7295 3.90028 13.6988 4.17545 13.6028L13.8788 11.8927C14.3251 11.8141 14.7218 11.5615 14.9818 11.1903C15.2418 10.8191 15.3437 10.3599 15.2651 9.91363C15.1865 9.46735 14.9338 9.07057 14.5627 8.81059C14.1915 8.5506 13.7323 8.44871 13.286 8.52732L6.47145 9.72998Z"
+            fill="#FFC436"
+          />
+        </svg>
+      }
+      onClick={handleReCenter}
+      reverseIcon={true}
+      styleButtonOpts={{ bottom: "37px", right: "54px", fontWeight: "600" }}
+    />
+  );
 };
 
 export default SiteSelection;

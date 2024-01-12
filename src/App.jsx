@@ -26,17 +26,15 @@ function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
 
-  const [lng, setLng] = useState(initialView.lng);
-  const [lat, setLat] = useState(initialView.lat);
-  const [zoom, setZoom] = useState(initialView.zoom);
-
   const [spinEnabled, setSpinEnabled] = useState(true);
   const [userInteracting, setUserInteracting] = useState(false);
   const [mapRef, setMapRef] = useState(null);
 
-  function spinGlobe() {
+  function spinGlobe(_, state = false) {
     const zoom = map.current.getZoom();
-    if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
+    console.log(userInteracting, state, "spin globe");
+
+    if (spinEnabled && !userInteracting && !state && zoom < maxSpinZoom) {
       let distancePerSecond = 360 / secondsPerRevolution;
       if (zoom > slowSpinZoom) {
         // Slow spinning at higher zooms
@@ -56,16 +54,14 @@ function App() {
   }
 
   useEffect(() => {
-    if (map.current) {
-      setMapRef(map.current);
-      return;
-    }
+    if (map.current) return;
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [lng, lat],
+      center: [initialView.lng, initialView.lat],
       projection: "globe",
-      zoom: zoom,
+      zoom: initialView.zoom,
       language: "en",
     });
 
@@ -73,33 +69,43 @@ function App() {
 
     spinGlobe();
 
-    map.current.on("mousedown", () => {
-      setUserInteracting(true);
-    });
+    // map.current.on("dragend", () => {
+    //   setUserInteracting(false);
+    //   spinGlobe();
+    // });
 
-    map.current.on("mouseup", () => {
-      setUserInteracting(false);
-      spinGlobe();
-    });
+    // map.current.on("pitchend", () => {
+    //   setUserInteracting(false);
+    //   spinGlobe();
+    // });
 
-    map.current.on("dragend", () => {
-      setUserInteracting(false);
-      spinGlobe();
-    });
+    // map.current.on("rotateend", () => {
+    //   setUserInteracting(false);
+    //   spinGlobe();
+    // });
+  });
 
-    map.current.on("pitchend", () => {
-      setUserInteracting(false);
-      spinGlobe();
-    });
+  useEffect(() => {
+    if (map.current) {
+      map.current.on("moveend", spinGlobe);
+      map.current.on("mousedown", () => {
+        setUserInteracting(true);
+        console.log("mouse down");
+      });
 
-    map.current.on("rotateend", () => {
-      setUserInteracting(false);
-      spinGlobe();
-    });
+      map.current.on("mouseup", () => {
+        console.log("mouse up");
+        setUserInteracting(false);
+        spinGlobe();
+      });
+    }
 
-    map.current.on("moveend", () => {
-      spinGlobe();
-    });
+    return () => {
+      console.log("why");
+      map.current.off("moveend", spinGlobe);
+      map.current.off("mousedown");
+      map.current.off("mouseup");
+    };
   });
 
   return (

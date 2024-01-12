@@ -34,7 +34,7 @@ const HomePage = ({ map }) => {
         className="absolute bottom-[50px] left-1/2 -translate-x-1/2 flex items-center"
         onClick={handleStartPorject}
       >
-        <span>Start Project</span>
+        <span>Start</span>
         <svg
           className="ml-5 mt-[5px]"
           xmlns="http://www.w3.org/2000/svg"
