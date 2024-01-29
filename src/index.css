@@ -3,6 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+body * {
   font-family: "Barlow", sans-serif;
 }

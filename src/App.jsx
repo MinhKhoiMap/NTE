@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl";
 import { Map } from "react-map-gl";
-import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import { useRef, useContext, useCallback } from "react";
 import { Route, Routes } from "react-router-dom";
 import { initialViewState } from "./contexts/initialViewContext";
 
@@ -45,7 +45,7 @@ function App() {
         easing: (n) => n,
       });
     }
-  }, []);
+  }, [map]);
 
   return (
     <div className="App w-screen h-screen relative">

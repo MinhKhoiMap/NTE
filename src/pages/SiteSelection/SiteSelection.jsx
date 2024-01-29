@@ -10,10 +10,10 @@ import { siteSelectionData } from "../../assets/data/site";
 import Button from "../../components/Button/Button";
 import Details from "../../components/Details/Details";
 
-const SiteSelection = () => {
+const SiteSelection = ({ children }) => {
   let flying = false;
   const [mapBounds, setMapBounds] = useState(null);
-  const [siteChoseIndex, setSiteChoseIndex] = useState(null);
+  const [siteChosenIndex, setSiteChosenIndex] = useState(null);
   const [isShowMarker, setIsShowMarker] = useState(false);
 
   const { map } = useMap();
@@ -72,35 +72,38 @@ const SiteSelection = () => {
     map.fitBounds(bounds, {
       padding: { top: 20, bottom: 20, left: 20, right: 20 },
     });
-  }, []);
+  });
 
-  const siteLayerHandler = useCallback((name, feature, id) => {
-    map.on("click", `fill_${name}`, (e) => {
-      setSiteChoseIndex(id);
-      navigate(`./${id}`);
-    });
+  const siteLayerHandler = useCallback(
+    (name, feature, id) => {
+      map.on("click", `fill_${name}`, (e) => {
+        setSiteChosenIndex(id);
+        navigate(`./${id}`);
+      });
 
-    map.on("mouseenter", `fill_${name}`, (e) => {
-      map.getMap().doubleClickZoom.disable();
-      map.getCanvas().style.cursor = "pointer";
-    });
+      map.on("mouseenter", `fill_${name}`, (e) => {
+        map.getMap().doubleClickZoom.disable();
+        map.getCanvas().style.cursor = "pointer";
+      });
 
-    map.on("mouseleave", `fill_${name}`, (e) => {
-      map.getMap().doubleClickZoom.enable();
-      map.getCanvas().style.cursor = "grab";
-    });
+      map.on("mouseleave", `fill_${name}`, (e) => {
+        map.getMap().doubleClickZoom.enable();
+        map.getCanvas().style.cursor = "grab";
+      });
 
-    map.on("dragstart", `fill_${name}`, (e) => {
-      map.getCanvas().style.cursor = "grab";
-    });
+      map.on("dragstart", `fill_${name}`, (e) => {
+        map.getCanvas().style.cursor = "grab";
+      });
 
-    map.on("dragend", `fill_${name}`, (e) => {
-      map.getCanvas().style.cursor = "cursor";
-    });
-  }, []);
+      map.on("dragend", `fill_${name}`, (e) => {
+        map.getCanvas().style.cursor = "cursor";
+      });
+    },
+    [map]
+  );
 
-  const handleReCenter = () => {
-    setSiteChoseIndex(null);
+  const handleReStart = () => {
+    setSiteChosenIndex(null);
     navigate("./");
     map.fitBounds(mapBounds, {
       padding: { top: 20, bottom: 20, left: 20, right: 20 },
@@ -110,7 +113,7 @@ const SiteSelection = () => {
   return (
     <>
       <Button
-        label="Re-center"
+        label="Restart"
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -125,13 +128,17 @@ const SiteSelection = () => {
             />
           </svg>
         }
-        onClick={handleReCenter}
+        onClick={handleReStart}
         reverseIcon={true}
         styleButtonOpts={{
           bottom: "37px",
-          right: "54px",
+          left: "50%",
+          transform: "translateX(-55%)",
           fontWeight: "600",
           padding: "20px",
+          background: "none",
+          border: "1px solid #FFC436",
+          boxShadow: "2px 2px 4px 0px rgba(255, 255, 255, 0.50)",
         }}
       />
 
@@ -141,8 +148,6 @@ const SiteSelection = () => {
 
         useEffect(() => {
           siteLayerHandler(name, feature, index);
-
-          // console.log(polyLabelLngLat);
 
           return () => {
             map.off("click", `fill_${name}`);
@@ -168,12 +173,12 @@ const SiteSelection = () => {
               paint={{ "fill-color": "rgba(13, 16, 92, 0.3)" }}
             />
 
-            {siteChoseIndex !== "name" && isShowMarker && (
+            {siteChosenIndex !== "name" && isShowMarker && (
               <Marker
                 longitude={polyLabelLngLat[0]}
                 latitude={polyLabelLngLat[1]}
               >
-                <div className="marker">
+                <div className={`marker`}>
                   <div className="pin">
                     <div className="label">{feature.name}</div>
                   </div>
@@ -185,10 +190,7 @@ const SiteSelection = () => {
         );
       })}
 
-      {/* {(siteChoseIndex || siteChoseIndex === 0) && (
-        <Details siteIndex={siteChoseIndex} />
-      )} */}
-      <Outlet context={[siteChoseIndex || 0]} />
+      <Outlet context={[siteChosenIndex || 0]} />
     </>
   );
 };
