@@ -1,10 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import "./HomePage.css";
 import { Link } from "react-router-dom";
 import { initialViewState } from "../../contexts/initialViewContext";
+import { useMap } from "react-map-gl";
 
-const HomePage = ({ map }) => {
+const HomePage = () => {
   const initialView = useContext(initialViewState);
+  const { map } = useMap();
 
   const handleStartPorject = () => {
     map.flyTo({
@@ -16,11 +18,13 @@ const HomePage = ({ map }) => {
   };
 
   useEffect(() => {
-    if (map)
+    if (map) {
+      // console.log(initialView);
       map.flyTo({
-        center: [initialView.lng, initialView.lat],
+        center: [initialView.longitude, initialView.latitude],
         zoom: initialView.zoom,
       });
+    }
   }, []);
 
   return (

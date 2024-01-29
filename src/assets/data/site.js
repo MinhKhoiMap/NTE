@@ -4,6 +4,7 @@ export const siteSelectionData = {
   features: [
     {
       type: "Feature",
+      name: "1",
       properties: {
         fid: 82645.0,
         handle: 222088,
@@ -42,6 +43,7 @@ export const siteSelectionData = {
     },
     {
       type: "Feature",
+      name: "2",
       properties: {
         fid: 82646.0,
         handle: 222089,
@@ -80,6 +82,7 @@ export const siteSelectionData = {
     },
     {
       type: "Feature",
+      name: "3",
       properties: {
         fid: 82647.0,
         handle: 222090,
@@ -119,6 +122,7 @@ export const siteSelectionData = {
     },
     {
       type: "Feature",
+      name: "4",
       properties: {
         fid: 82648.0,
         handle: 222091,
@@ -161,6 +165,7 @@ export const siteSelectionData = {
     },
     {
       type: "Feature",
+      name: "5",
       properties: {
         fid: 82650.0,
         handle: 222093,

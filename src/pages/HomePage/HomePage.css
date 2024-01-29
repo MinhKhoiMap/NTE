@@ -1,7 +1,7 @@
 #fly {
-  padding: 10px 50px;
+  padding: 7px 30px;
   border-radius: 3px;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: 600;
   text-align: center;
   color: #fff;
@@ -14,5 +14,5 @@
 h1 {
   font-size: 50px;
   font-weight: 700;
-  text-shadow: 3px 4px rgba(0, 0, 0, 0.25);
+  text-shadow: 3px 4px rgba(255, 255, 255, 0.5);
 }
