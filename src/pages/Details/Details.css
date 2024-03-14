@@ -1,0 +1,104 @@
+.details__navbar {
+  display: flex;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  border-radius: 66px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -200%);
+  transition: all 0.2s linear;
+  opacity: 0;
+  box-shadow: 0px 4px 4px 0px rgba(255, 255, 255, 0.25),
+    0px 3px 3px 0px rgba(255, 255, 255, 0.1) inset;
+}
+
+.details__navbar > a,
+.details__navbar > div {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 28px;
+  font-weight: 400;
+  backdrop-filter: blur(40px);
+  display: flex;
+  align-items: center;
+}
+
+.details__navbar > a:hover {
+  background-color: #ffc336;
+  transition: background-color 0.3s;
+}
+
+.details__navbar--show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.details__filter {
+  position: fixed;
+  z-index: 9999;
+  top: 50%;
+  left: 30px;
+  transform: translateY(-50%);
+}
+
+.details__filter .details__filter-tool {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(3px);
+  margin: 10px 0;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0px 3px 3px 0px rgba(255, 255, 255, 0.1) inset;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.details__filter .details__filter-tool p {
+  width: 100%;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 400;
+  position: relative;
+  transition: color 0.3s;
+  text-align: center;
+}
+
+.details__filter .details__filter-tool.details__filter-tool--active {
+  background-color: #191d88;
+}
+
+.details__filter .details__filter-tool svg * {
+  transition: all 0.3s;
+}
+
+.details__filter .details__filter-tool:hover svg * {
+  fill: #191d88;
+}
+
+.details__filter .details__filter-tool:hover p {
+  color: #191d88;
+}
+
+.details__filter .details__filter-tool.details__filter-tool--active p {
+  color: #fff !important;
+}
+
+.details__area-info {
+  width: 432px;
+  height: 596px;
+  border-radius: 29px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+    0px 3px 3px 0px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, 0.3);
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.details__image-slider .details__image {
+  width: calc(100% / 3 - 20px * 2);
+}

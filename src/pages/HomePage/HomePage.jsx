@@ -29,8 +29,14 @@ const HomePage = () => {
 
   return (
     <>
-      <h1 className="absolute top-9 left-10 text-white uppercase">
-        nha trang economy
+      <h1
+        className="absolute top-9 left-10 text-white xl:w-1/3 w-1/4
+                  uppercase leading-9 text-justify mr-6 break-words"
+      >
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit omnis
+        provident reiciendis eius debitis, assumenda officiis iusto recusandae.
+        Quo itaque iure sunt magni quam expedita ratione exercitationem
+        aspernatur veritatis doloribus.
       </h1>
       <Link
         to="/nha_trang"

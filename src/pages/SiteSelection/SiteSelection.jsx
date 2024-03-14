@@ -8,9 +8,9 @@ import "./SiteSelection.css";
 
 import { siteSelectionData } from "../../assets/data/site";
 import Button from "../../components/Button/Button";
-import Details from "../../components/Details/Details";
+import Details from "../Details/Details";
 
-const SiteSelection = ({ children }) => {
+const SiteSelection = () => {
   let flying = false;
   const [mapBounds, setMapBounds] = useState(null);
   const [siteChosenIndex, setSiteChosenIndex] = useState(null);
@@ -113,7 +113,7 @@ const SiteSelection = ({ children }) => {
   return (
     <>
       <Button
-        label="Restart"
+        label="Center"
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +164,7 @@ const SiteSelection = ({ children }) => {
               type="line"
               paint={{
                 "line-color": "#fff",
-                "line-width": 4,
+                "line-width": 2,
               }}
             />
             <Layer
@@ -173,7 +173,7 @@ const SiteSelection = ({ children }) => {
               paint={{ "fill-color": "rgba(13, 16, 92, 0.3)" }}
             />
 
-            {siteChosenIndex !== "name" && isShowMarker && (
+            {/* {siteChosenIndex !== "name" && isShowMarker && (
               <Marker
                 longitude={polyLabelLngLat[0]}
                 latitude={polyLabelLngLat[1]}
@@ -185,7 +185,7 @@ const SiteSelection = ({ children }) => {
                   <div className="pulse"></div>
                 </div>
               </Marker>
-            )}
+            )} */}
           </Source>
         );
       })}

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mapbox/polylabel": "^1.0.2",
+    "@turf/turf": "^6.5.0",
     "axios": "^1.6.3",
     "mapbox-gl": "^3.0.1",
     "react": "^18.2.0",

@@ -11,7 +11,8 @@ import "./index.css";
 // Import components
 import HomePage from "./pages/HomePage/HomePage";
 import SiteSelection from "./pages/SiteSelection/SiteSelection";
-import Details from "./components/Details/Details";
+import Details from "./pages/Details/Details";
+import Test from "./pages/Test/Test";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGVsbG9pYW1raG9pIiwiYSI6ImNscWtoODB0MzIyeTEybm1rc2l1YWg0bm8ifQ.wOn1q83oPkWNJBap0KFrWQ";
@@ -64,6 +65,7 @@ function App() {
           <Route path="/nha_trang" element={<SiteSelection />}>
             <Route path="/nha_trang/:site" element={<Details />} />
           </Route>
+          {/* <Route path="/test" element={<Test />} /> */}
         </Routes>
       </Map>
     </div>
