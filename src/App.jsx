@@ -38,6 +38,8 @@ function App() {
       }
       const center = map.current.getMap().getCenter();
       center.lng += distancePerSecond;
+
+      
       // Smoothly animate the map over one second.
       // When this animation is complete, it calls a 'moveend' event.
       map.current.easeTo({

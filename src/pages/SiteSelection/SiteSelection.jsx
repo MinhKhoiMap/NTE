@@ -11,10 +11,8 @@ import Button from "../../components/Button/Button";
 import Details from "../Details/Details";
 
 const SiteSelection = () => {
-  let flying = false;
   const [mapBounds, setMapBounds] = useState(null);
   const [siteChosenIndex, setSiteChosenIndex] = useState(null);
-  const [isShowMarker, setIsShowMarker] = useState(false);
 
   const { map } = useMap();
   const navigate = useNavigate();
@@ -26,24 +24,24 @@ const SiteSelection = () => {
       zoom: 13,
       speed: 1.2,
     });
-    map.getMap().fire("flystart");
+    // map.getMap().fire("flystart");
 
     handleLoadSite();
 
-    map.getMap().on("flystart", () => {
-      flying = true;
-    });
+    // map.getMap().on("flystart", () => {
+    //   flying = true;
+    // });
 
-    map.getMap().on("flyend", () => {
-      flying = false;
-    });
+    // map.getMap().on("flyend", () => {
+    //   flying = false;
+    // });
 
-    map.getMap().once("moveend", () => {
-      if (flying) {
-        setIsShowMarker(true);
-        map.getMap().fire("flyend");
-      }
-    });
+    // map.getMap().once("moveend", () => {
+    //   if (flying) {
+    //     setIsShowMarker(true);
+    //     map.getMap().fire("flyend");
+    //   }
+    // });
   }, [map]);
 
   const handleLoadSite = useCallback(() => {
@@ -72,7 +70,7 @@ const SiteSelection = () => {
     map.fitBounds(bounds, {
       padding: { top: 20, bottom: 20, left: 20, right: 20 },
     });
-  });
+  }, [map]);
 
   const siteLayerHandler = useCallback(
     (name, feature, id) => {
@@ -164,7 +162,7 @@ const SiteSelection = () => {
               type="line"
               paint={{
                 "line-color": "#fff",
-                "line-width": 2,
+                "line-width": 0.4,
               }}
             />
             <Layer

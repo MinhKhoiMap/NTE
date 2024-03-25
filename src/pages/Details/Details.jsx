@@ -10,10 +10,10 @@ import { siteSelectionData } from "../../assets/data/site";
 
 // Components
 import InfoTable from "../../components/InfoTable/InfoTable";
-import Interview from "./Interview/Interview";
-import Landuse from "./Landuse/Landuse";
-import Buildinguse from "./Buildinguse/Buildinguse";
-import Activities from "./Activities/Activities";
+import Interview from "./Interact/Interview/Interview";
+import Landuse from "./Interact/Landuse/Landuse";
+import Buildinguse from "./Interact/Buildinguse/Buildinguse";
+import Activities from "./Interact/Activities/Activities";
 
 const viewModeArr = ["interview", "landuse", "buildinguse", "activities"];
 const urlImageArr = [
@@ -22,77 +22,50 @@ const urlImageArr = [
 ];
 
 const Details = () => {
-  let flying = false;
-  const tableMaxWidth = 300,
-    tableMaxHeight = 350;
-
   let { site } = useParams();
   const navbarRef = useRef();
   const { map } = useMap();
-  const mouseDivRef = useRef();
 
-  const [infoTablePosition, setInfoTablePosition] = useState(null);
-  const [showInfoTable, setShowInfoTable] = useState(false);
-  const [infoTable, setInfoTable] = useState([]);
-  const [siteIndex, setSiteIndex] = useState(site);
+  const [siteIndex, setSiteIndex] = useState(null);
   const [viewMode, setViewMode] = useState(viewModeArr[0]);
 
   // Handle Fitbounds
-  const fitArea = useCallback(() => {
-    var siteBounds = new mapboxgl.LngLatBounds();
-    var siteMinLat = 90,
-      siteMaxLat = -90,
-      siteMinLng = 180,
-      siteMaxLng = -180;
+  const fitArea = () => {
+    if (siteIndex) {
+      var siteMinLat = 90,
+        siteMaxLat = -90,
+        siteMinLng = 180,
+        siteMaxLng = -180;
 
-    siteSelectionData.features[siteIndex].geometry.coordinates[0].forEach(
-      (coordinate) => {
-        siteMaxLat = Math.max(coordinate[1], siteMaxLat);
-        siteMinLat = Math.min(coordinate[1], siteMinLat);
-        siteMaxLng = Math.max(coordinate[0], siteMaxLng);
-        siteMinLng = Math.min(coordinate[0], siteMinLng);
-      }
-    );
+      siteSelectionData.features[siteIndex]?.geometry.coordinates[0].forEach(
+        (coordinate) => {
+          siteMaxLat = Math.max(coordinate[1], siteMaxLat);
+          siteMinLat = Math.min(coordinate[1], siteMinLat);
+          siteMaxLng = Math.max(coordinate[0], siteMaxLng);
+          siteMinLng = Math.min(coordinate[0], siteMinLng);
+        }
+      );
 
-    var siteBounds = new mapboxgl.LngLatBounds([
-      [siteMaxLng, siteMaxLat],
-      [siteMinLng, siteMinLat],
-    ]);
+      var siteBounds = new mapboxgl.LngLatBounds([
+        [siteMaxLng, siteMaxLat],
+        [siteMinLng, siteMinLat],
+      ]);
 
-    map.fitBounds(siteBounds, {
-      padding: { top: 60, bottom: 60, left: 60, right: 60 },
-    });
-  }, [siteIndex]);
+      map.fitBounds(siteBounds, {
+        padding: { top: 60, bottom: 60, left: 60, right: 60 },
+      });
+    }
+  };
 
   // Change Chosen Site State
   useEffect(() => {
     setSiteIndex(site);
-  }, [site]);
+  });
 
-  // Change Choose Site
+  // Handle Fit Bounds When Change Site State
   useEffect(() => {
     fitArea();
   }, [siteIndex]);
-
-  // Delay render until fly end
-  useEffect(() => {
-    map.getMap().fire("flystart");
-
-    map.getMap().on("flystart", () => {
-      flying = true;
-    });
-
-    map.getMap().on("flyend", () => {
-      flying = false;
-      fitArea();
-    });
-
-    map.getMap().once("moveend", () => {
-      if (flying) {
-        map.getMap().fire("flyend");
-      }
-    });
-  }, []);
 
   // handle Top Navbar
   useEffect(() => {
@@ -114,82 +87,17 @@ const Details = () => {
     };
   }, []);
 
-  useEffect(() => {
-    map.on("mousemove", "landuse_selection", (e) => {
-      setShowInfoTable(true);
-
-      let polygon =
-        e.features[0].geometry.type === "Polygon"
-          ? turf.polygon(e.features[0].geometry.coordinates)
-          : turf.multiPolygon(e.features[0].geometry.coordinates);
-
-      setInfoTable([
-        { title: "Landuse", content: e.features[0].properties.Landuse },
-        {
-          title: "Area",
-          content: turf.round(turf.area(polygon), 5),
-        },
-      ]);
-
-      const screenX = screen.width,
-        screenY = screen.height;
-      let clientX = e.originalEvent.clientX,
-        clientY = e.originalEvent.clientY,
-        positionX = "left",
-        positionY = "top",
-        valueX = 20,
-        valueY = 20;
-
-      if (clientY + tableMaxHeight + 50 > screenY) {
-        positionY = "bottom";
-        valueY = 0;
-      }
-      if (clientX + tableMaxWidth + 50 > screenX) {
-        positionX = "right";
-        valueY = 0;
-      }
-
-      mouseDivRef.current.style.top = clientY + "px";
-      mouseDivRef.current.style.left = clientX + "px";
-
-      setInfoTablePosition({
-        px: { position: positionX, value: valueX + "px" },
-        py: { position: positionY, value: valueY + "px" },
-      });
-    });
-
-    map.on("mouseleave", "landuse_selection", () => {
-      setShowInfoTable(false);
-      setInfoTablePosition(null);
-    });
-
-    return () => {
-      map.off("mousemove", "landuse_selection");
-      map.off("mouseleave", "landuse_selection");
-    };
-  }, []);
-
   return (
     <>
-      {viewMode === viewModeArr[0] && <Interview site={siteIndex} />}
+      {viewMode === viewModeArr[0] && siteIndex && (
+        <Interview site={siteIndex} />
+      )}
 
       {viewMode === viewModeArr[1] && <Landuse site={siteIndex} />}
 
       {viewMode === viewModeArr[2] && <Buildinguse site={siteIndex} />}
 
       {viewMode === viewModeArr[3] && <Activities site={siteIndex} />}
-
-      <div className="fixed" ref={mouseDivRef}>
-        {showInfoTable && (
-          <InfoTable
-            infoList={infoTable}
-            cx={infoTablePosition.px}
-            cy={infoTablePosition.py}
-            maxWidth={tableMaxWidth}
-            maxHeight={tableMaxHeight}
-          />
-        )}
-      </div>
 
       <div className="details__navbar" ref={navbarRef}>
         <div className="pl-16 pr-11 text-[#000] bg-[#FFC436]">
