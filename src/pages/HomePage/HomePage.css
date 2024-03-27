@@ -1,18 +1,23 @@
 #fly {
-  padding: 7px 30px;
-  border-radius: 3px;
-  font-size: 30px;
+  padding: 8px 30px;
+  border-radius: 8px;
+  font-size: 25px;
   font-weight: 600;
+  line-height: 120%;
   text-align: center;
   color: #fff;
-  background: #ffc436;
   cursor: pointer;
-  box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
-  border-radius: 68px;
+  box-shadow: 0 0 6px 0 #fff;
 }
 
-h1 {
-  font-size: 24px;
+h1.project-name {
+  font-size: 50px;
   font-weight: 700;
   text-shadow: 2px 3px rgba(255, 255, 255, 0.5);
+}
+
+p {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
 }

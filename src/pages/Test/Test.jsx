@@ -3,31 +3,19 @@ import { siteSelectionData } from "../../assets/data/site";
 import { useEffect } from "react";
 
 import pdf from "../../assets/posts/Maplanduse.pdf";
+import ImageSlider from "../../components/ImageSlider/ImageSlider";
+
+const urlImageArr = [
+  "https://images.ctfassets.net/ub3bwfd53mwy/6atCoddzStFzz0RcaztYCh/1c3e8a37eebe3c6a435038f8d9eef7f3/3_Image.jpg?w=750",
+  "https://media.tenor.com/dimT0JAAMb4AAAAM/cat-cute.gif",
+];
 
 const Test = () => {
-  let flying = false;
-  const { map } = useMap();
-
-  useEffect(() => {
-    map.flyTo({
-      center: [109.20182482281035, 12.246813094956494],
-      essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-      zoom: 13,
-      speed: 1.2,
-    });
-  }, [map]);
-
-  useEffect(() => {
-    map.on("click", "site_selection", (e) => {
-      // console.log(map.queryRenderedFeatures(e.point)[0].geometry.coordinates);
-      console.log(e.features[0]);
-    });
-  });
-
   return (
-    <>
-      <object data={pdf} type=""></object>
-    </>
+    <div className="fixed top-0 bottom-0 left-0 right-0">
+      {/* <object data={pdf} type=""></object> */}
+      <ImageSlider imgArr={urlImageArr} />
+    </div>
   );
 };
 

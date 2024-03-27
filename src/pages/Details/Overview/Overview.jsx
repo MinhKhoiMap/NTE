@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 const Overview = () => {
-  return <div>Overview</div>;
+  return <div className="fixed top-0 left-0 text-white">Overview</div>;
 };
 
 export default Overview;

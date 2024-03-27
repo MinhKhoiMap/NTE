@@ -5,6 +5,7 @@ import * as turf from "@turf/turf";
 // Data
 import { landuseData } from "../../../../assets/data/landuse";
 import InfoTable from "../../../../components/InfoTable/InfoTable";
+import AnnotationTable from "../../../../components/AnnotationTable/AnnotationTable";
 
 const CaseLanduseValues = [
   "Housing Land",
@@ -32,6 +33,8 @@ const Landuse = ({ site }) => {
   const [showTable, setShowTable] = useState(false);
   const [infoTable, setInfoTable] = useState([]);
 
+  const [filterLand, setFilterLand] = useState(null);
+
   useEffect(() => {
     function controlInfoTable(e) {
       setShowTable(true);
@@ -45,7 +48,7 @@ const Landuse = ({ site }) => {
         { title: "Landuse", content: e.features[0].properties.Landuse },
         {
           title: "Area",
-          content: turf.round(turf.area(polygon), 5),
+          content: turf.round(turf.area(polygon), 5) + " m2",
         },
       ]);
 
@@ -88,10 +91,10 @@ const Landuse = ({ site }) => {
     map.on("mousemove", "landuse_selection", controlInfoTable);
     map.on("mouseleave", "landuse_selection", reset);
 
-    return () => {
-      map.off("mousemove", "landuse_selection", controlInfoTable);
-      map.off("mouseleave", "landuse_selection", reset);
-    };
+    // return () => {
+    //   map.off("mousemove", "landuse_selection", controlInfoTable);
+    //   map.off("mouseleave", "landuse_selection", reset);
+    // };
   });
 
   return (
@@ -110,6 +113,11 @@ const Landuse = ({ site }) => {
               "rgba(255, 196, 54, 0.3)",
             ],
           }}
+          filter={
+            filterLand
+              ? ["==", ["get", "Landuse"], filterLand]
+              : ["!=", ["get", "Landuse"], null]
+          }
         />
       </Source>
 
@@ -124,6 +132,12 @@ const Landuse = ({ site }) => {
           />
         )}
       </div>
+
+      <AnnotationTable
+        items={CaseLanduseValues}
+        filter={filterLand}
+        setFilter={setFilterLand}
+      />
     </>
   );
 };

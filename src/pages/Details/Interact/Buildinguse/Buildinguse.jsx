@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Layer, Source, useMap } from "react-map-gl";
+// Components
+import InfoTable from "../../../../components/InfoTable/InfoTable";
 
 // Data
 import { buildinguseData } from "../../../../assets/data/buildinguse";
-import InfoTable from "../../../../components/InfoTable/InfoTable";
+import AnnotationTable from "../../../../components/AnnotationTable/AnnotationTable";
 
 const CaseBuildinguseValues = [
   "Housing",
@@ -27,18 +29,24 @@ const Buildinguse = ({ site }) => {
     tableMaxHeight = 250;
 
   const mouseDivRef = useRef();
+  const filter_btn = useRef();
   const { map } = useMap();
 
   const [infoTablePosition, setInfoTablePosition] = useState(null);
   const [showTable, setShowTable] = useState(false);
   const [infoTable, setInfoTable] = useState([]);
 
+  const [filterBuilding, setFilterBuilding] = useState(null);
+
   useEffect(() => {
     function controlInfoTable(e) {
       setShowTable(true);
 
       setInfoTable([
-        { title: "Building use", content: e.features[0].properties.Buildsused },
+        {
+          title: "Building use",
+          content: e.features[0].properties.Buildsused,
+        },
       ]);
 
       const screenX = screen.width,
@@ -75,16 +83,19 @@ const Buildinguse = ({ site }) => {
     function reset() {
       setShowTable(false);
       setInfoTablePosition(null);
+      map.getCanvas().style.cursor = "grab";
     }
+
+    map.on("mouseenter", "buildinguse_selection", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
 
     map.on("mousemove", "buildinguse_selection", controlInfoTable);
     map.on("mouseleave", "buildinguse_selection", reset);
-
-    return () => {
-      map.off("mousemove", "buildinguse_selection", controlInfoTable);
-      map.off("mouseleave", "buildinguse_selection", reset);
-      console.log("wtf");
-    };
+    // return () => {
+    //   map.off("mousemove", "buildinguse_selection", controlInfoTable);
+    //   map.off("mouseleave", "buildinguse_selection", reset);
+    // };
   });
 
   return (
@@ -103,6 +114,11 @@ const Buildinguse = ({ site }) => {
               "rgba(255, 196, 54, 0.3)",
             ],
           }}
+          filter={
+            filterBuilding
+              ? ["==", ["get", "Buildsused"], filterBuilding]
+              : ["!=", ["get", "Buildsused"], null]
+          }
         />
       </Source>
 
@@ -117,6 +133,12 @@ const Buildinguse = ({ site }) => {
           />
         )}
       </div>
+
+      <AnnotationTable
+        items={CaseBuildinguseValues}
+        filter={filterBuilding}
+        setFilter={setFilterBuilding}
+      />
     </>
   );
 };

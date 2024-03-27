@@ -3,23 +3,18 @@ import { Link, useParams } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import { useMap } from "react-map-gl";
 import * as turf from "@turf/turf";
+import $ from "jquery";
 
 // Assets
 import "./Details.css";
 import { siteSelectionData } from "../../assets/data/site";
+import Interact from "./Interact/Interact";
+import Project from "./Project/Project";
+import Overview from "./Overview/Overview";
 
-// Components
-import InfoTable from "../../components/InfoTable/InfoTable";
-import Interview from "./Interact/Interview/Interview";
-import Landuse from "./Interact/Landuse/Landuse";
-import Buildinguse from "./Interact/Buildinguse/Buildinguse";
-import Activities from "./Interact/Activities/Activities";
+const viewModeArr = ["Overview", "Projecct", "Interact"];
 
-const viewModeArr = ["interview", "landuse", "buildinguse", "activities"];
-const urlImageArr = [
-  "https://images.ctfassets.net/ub3bwfd53mwy/6atCoddzStFzz0RcaztYCh/1c3e8a37eebe3c6a435038f8d9eef7f3/3_Image.jpg?w=750",
-  "https://media.tenor.com/dimT0JAAMb4AAAAM/cat-cute.gif",
-];
+const areaName = "nha trang";
 
 const Details = () => {
   let { site } = useParams();
@@ -27,7 +22,7 @@ const Details = () => {
   const { map } = useMap();
 
   const [siteIndex, setSiteIndex] = useState(null);
-  const [viewMode, setViewMode] = useState(viewModeArr[0]);
+  const [viewMode, setViewMode] = useState(viewModeArr[2]);
 
   // Handle Fitbounds
   const fitArea = () => {
@@ -71,8 +66,9 @@ const Details = () => {
   useEffect(() => {
     function handleShowNavbar(e) {
       if (
-        e.clientY <= 40 ||
-        String(e.target.parentNode.className).includes("details__navbar")
+        (navbarRef.current && e.clientY <= 40) ||
+        $(e.target).parents(".details__navbar").length ||
+        $(e.target).hasClass("details__navbar")
       ) {
         navbarRef.current.classList.add("details__navbar--show");
       } else {
@@ -80,67 +76,57 @@ const Details = () => {
       }
     }
 
-    document.addEventListener("mousemove", handleShowNavbar);
+    let timer = setTimeout(() => {
+      document.addEventListener("mousemove", handleShowNavbar);
+    }, 1500);
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("mousemove", handleShowNavbar);
     };
   }, []);
 
   return (
     <>
-      {viewMode === viewModeArr[0] && siteIndex && (
-        <Interview site={siteIndex} />
-      )}
-
-      {viewMode === viewModeArr[1] && <Landuse site={siteIndex} />}
-
-      {viewMode === viewModeArr[2] && <Buildinguse site={siteIndex} />}
-
-      {viewMode === viewModeArr[3] && <Activities site={siteIndex} />}
-
-      <div className="details__navbar" ref={navbarRef}>
-        <div className="pl-16 pr-11 text-[#000] bg-[#FFC436]">
-          Area {Number(siteIndex) + 1}
+      <div
+        className="details__navbar details__navbar--show opacity-100"
+        ref={navbarRef}
+      >
+        <div className="flex flex-col justify-center gap-1">
+          <h3 className="capitalize">{areaName} Night Economy</h3>
+          <p>Area {siteIndex && Number(siteIndex) + 1}</p>
         </div>
-        <Link className="px-5 text-white">Overview</Link>
-        <Link className="px-5 text-white">Project</Link>
-        <Link className="pl-5 pr-16 text-white">Interact</Link>
-      </div>
-      <div className="details__filter">
-        <div
-          className={`details__filter-tool ${
-            viewMode === viewModeArr[2] && "details__filter-tool--active"
-          }`}
-          onClick={() => setViewMode(viewModeArr[2])}
-        >
-          <p>Building Use</p>
-        </div>
-        <div
-          className={`details__filter-tool ${
-            viewMode === viewModeArr[1] && "details__filter-tool--active"
-          }`}
-          onClick={() => setViewMode(viewModeArr[1])}
-        >
-          <p>Land Use</p>
-        </div>
-        <div
-          className={`details__filter-tool ${
-            viewMode === viewModeArr[3] && "details__filter-tool--active"
-          }`}
-          onClick={() => setViewMode(viewModeArr[3])}
-        >
-          <p>Activities Point</p>
-        </div>
-        <div
-          className={`details__filter-tool ${
-            viewMode === viewModeArr[0] && "details__filter-tool--active"
-          }`}
-          onClick={() => setViewMode(viewModeArr[0])}
-        >
-          <p>Interview Point</p>
+        <div>
+          <button
+            className={`text-white text-center ${
+              viewMode === viewModeArr[0] && "current-mode"
+            }`}
+            onClick={() => setViewMode(viewModeArr[0])}
+          >
+            Overview
+          </button>
+          <button
+            className={`text-white text-center ${
+              viewMode === viewModeArr[1] && "current-mode"
+            }`}
+            onClick={() => setViewMode(viewModeArr[1])}
+          >
+            Project
+          </button>
+          <button
+            className={`text-white text-center ${
+              viewMode === viewModeArr[2] && "current-mode"
+            }`}
+            onClick={() => setViewMode(viewModeArr[2])}
+          >
+            Interact
+          </button>
         </div>
       </div>
+
+      {viewMode === viewModeArr[2] && <Interact siteIndex={siteIndex} />}
+      {viewMode === viewModeArr[1] && <Project />}
+      {viewMode === viewModeArr[0] && <Overview />}
     </>
   );
 };

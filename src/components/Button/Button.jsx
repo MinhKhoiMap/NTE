@@ -1,19 +1,20 @@
 const Button = ({
   label,
-  onClick,
+  onClickCallback,
   icon,
   reverseIcon = false,
   styleButtonOpts = {},
   styleLabelOpts = {},
   isCenter = false,
+  rounded = "68px",
 }) => {
   return (
     <button
-      onClick={onClick}
+      onClick={onClickCallback}
       className={`px-5 py-[10px] border border-[#000] 
-            rounded-[68px] absolute flex items-center gap-[10px] bg-[#fff]
+            rounded-[${rounded}] flex items-center gap-[10px] bg-[#fff] text-center w-fit
             ${reverseIcon && "flex-row-reverse"}
-            ${isCenter && "-translate-x-1/2"}
+            ${isCenter && "fixed left-1/2 -translate-x-1/2"}
         `}
       style={{ ...styleButtonOpts }}
     >

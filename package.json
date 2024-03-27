@@ -10,9 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mapbox/polylabel": "^1.0.2",
+    "@lordicon/element": "^1.6.0",
+    "@lordicon/react": "^1.6.0",
     "@turf/turf": "^6.5.0",
     "axios": "^1.6.3",
+    "jquery": "^3.7.1",
+    "lottie-web": "^5.12.2",
     "mapbox-gl": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
