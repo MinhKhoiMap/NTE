@@ -23,7 +23,7 @@ const AnnotationTable = ({ items, filter, setFilter }) => {
 
   useEffect(() => {
     if ([1, -1].includes(filterState)) filter_btn.current?.play();
-  }, [filterState]);
+  }, [filterItem]);
 
   return (
     <div className="fixed bottom-24 right-6 gap-4 flex justify-around bg-white/15 px-2 py-3 rounded-lg">
