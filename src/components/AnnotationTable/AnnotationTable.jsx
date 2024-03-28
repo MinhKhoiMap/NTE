@@ -5,7 +5,7 @@ import { Player } from "@lordicon/react";
 import bookmark from "../../assets/images/bookmark.json";
 
 const AnnotationTable = ({ items, filter, setFilter }) => {
-  const [filterState, setFilterState] = useState(1);
+  const [filterState, setFilterState] = useState(0);
   const [filterItem, setFilterItem] = useState(null);
 
   const filter_btn = useRef();
@@ -22,7 +22,7 @@ const AnnotationTable = ({ items, filter, setFilter }) => {
   };
 
   useEffect(() => {
-    filter_btn.current?.play();
+    if ([1, -1].includes(filterState)) filter_btn.current?.play();
   }, [filterState]);
 
   return (
